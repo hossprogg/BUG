@@ -3,14 +3,28 @@ const router = express.Router()
 const Author = require('../models /authmod')
 
 //AUTHOR ROUTES
-router.get('/', (req, res) => {
-  res.render('index2')
+//prepended => authors/
+router.get('/', async (req, res) => {
+  let searchOptions = {}
+  if(req.query.name != null && req.query.name !== ''){
+    searchOptions.name = new RegExp(req.query.name,'i')
+  }
+  try{
+    const authors = await Author.find(searchOptions)//it has many option in it instead of this 
+    res.render('index2',{
+      authors : authors , 
+      searchOptions : req.query
+    })
+  }
+    catch{
+      res.redirect('/')
+    }
 })
 
-
 //AUTHOR ROUTES
+//prepended => authors/new
 router.get('/new', (req, res) => {
-    res.render('new',{ author : new Author() })
+    res.render('new',{ author : new Author() })// this doesn t creat anything actually but it create a model that we can use to delete update ....) and is gonna be sent to our ejs file 
   })
 
 //creat author route
@@ -18,17 +32,17 @@ router.get('/new', (req, res) => {
 
 router.post('/',async (req, res) => {
     const author = new Author({ 
-      name : req.body.name
+      name : req.body.name // cause already we have put an object under which gonna be the data
     })
-    //3awed tfarrej fazzet mayhebech l user ydakhel huwa sinon yehlek l idvid2  
-   try{
-      const newAuthor = await author.save()
-      res.render(`authors`)
-   }
-   catch{
+// obliging him to enter exactly that field istead of entering something else that could alter anyting in the database 
+    try{
+      // we have created it below next heree we gonna save it 
+      const newAuthor = await author.save()// w8 for it to be completed cause everthing in mongodb is done asynchronously 
+   res.redirect(`authors`)//here we have used '/' and not `/`
+   }catch{
     res.render('new',{
       author : author,
-      errorMessage : 'error creating author'
+      errorMessage : 'error creating author'//displays it when it s defined else it gonna be indefined 
     })
    }
     
