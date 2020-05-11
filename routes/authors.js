@@ -11,7 +11,7 @@ router.get('/', async (req, res) => {
   }
   try{
     const authors = await Author.find(searchOptions)//it has many option in it instead of this 
-    res.render('index2',{
+    res.render('/index',{
       authors : authors , 
       searchOptions : req.query
     })
@@ -24,7 +24,7 @@ router.get('/', async (req, res) => {
 //AUTHOR ROUTES
 //prepended => authors/new
 router.get('/new', (req, res) => {
-    res.render('new',{ author : new Author() })// this doesn t creat anything actually but it create a model that we can use to delete update ....) and is gonna be sent to our ejs file 
+    res.render('new',{ author : new Author() })// this doesn t creat anything actually but it create a model that we can use to save ,delete update ....) later and is gonna be sent to our ejs file 
   })
 
 //creat author route

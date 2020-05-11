@@ -14,7 +14,7 @@ const expressLayouts = require('express-ejs-layouts')
 //and don t remember to exxxport it so it works 
 const indexRouter = require('./routes/index')
 const authoRouter = require('./routes/authors')
-
+const bookrouter  = require('./routes/books')
 const bodyparser = require('body-parser')
 const app = express()
 
@@ -48,8 +48,8 @@ mongoose.connect(db,{useNewUrlParser:true })
 //db.once('open',()=>console.log('error'))
 
 app.use('/', indexRouter)
-app.use('/authors', authoRouter) //ever route in authorouter is onna prepended with that /authors in the left 
-
+app.use('/authors', authoRouter)//ever route in authorouter is onna prepended with that /authors in the left 
+app.use('/books' , bookrouter)
 
 
 app.listen(process.env.PORT  || 3000)
