@@ -11,7 +11,7 @@ router.get('/', async (req, res) => {
   }
   try{
     const authors = await Author.find(searchOptions)//it has many option in it instead of this 
-    res.render('/index',{
+    res.render('index',{
       authors : authors , 
       searchOptions : req.query
     })
@@ -24,7 +24,7 @@ router.get('/', async (req, res) => {
 //AUTHOR ROUTES
 //prepended => authors/new
 router.get('/new', (req, res) => {
-    res.render('new',{ author : new Author() })// this doesn t creat anything actually but it create a model that we can use to save ,delete update ....) later and is gonna be sent to our ejs file 
+    res.render('new',{ author : new Author()})// this doesn t creat anything actually but it create a model that we can use to delete update ....) and it can be sent to our ejs file 
   })
 
 //creat author route
@@ -32,17 +32,21 @@ router.get('/new', (req, res) => {
 
 router.post('/',async (req, res) => {
     const author = new Author({ 
-      name : req.body.name // cause already we have put an object under which gonna be the data
+
+      name : req.body.name// here is we r accessing the name property in the form :body.name
+      //check his rq here of explecitly passing him the contact name 
     })
-// obliging him to enter exactly that field istead of entering something else that could alter anyting in the database 
+    // <% this jus gonna be run on the sever and not showed to the client %>
     try{
       // we have created it below next heree we gonna save it 
       const newAuthor = await author.save()// w8 for it to be completed cause everthing in mongodb is done asynchronously 
-   res.redirect(`authors`)//here we have used '/' and not `/`
+   res.redirect(`authors`)//
+   //res.redirect(`authors/${new}`)//
+
    }catch{
     res.render('new',{
-      author : author,
-      errorMessage : 'error creating author'//displays it when it s defined else it gonna be indefined 
+      author : author,//repopulation of the fields that we ve already intered 
+      errorMessage : 'error creating author'//displays it when it s set(add condition locals.errormessages in the ejs file) else it gonna be indefined 
     })
    }
     
