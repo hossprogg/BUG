@@ -4,7 +4,7 @@ const path = require('path')
 const multer = require('multer')
 const fs = require('fs')
 const Book  = require('../models /bookmodel')
-const uploadpath =  path.join('public', Book.CoverImageBasePath)
+const uploadpath =  path.join('public', Book.CoverImageBasePath)//why here /pblic and there /
 const Author = require('../models /authmod')
 const imageMimeTypes  = ['image/jpeg','image/png','image/gif']
 const upload = multer({
@@ -18,23 +18,23 @@ const upload = multer({
 //prepended => authors/
 router.get('/', async (req, res) => {
   //build this query from our request.query params
-  let query = Book.find()
-  if (req.query.title != null && req.query.title != '') {
+  let query = Book.find()//query object that we can query from and execute later // let => cause we gonna reassign it
+  if (req.query.title && req.query.title != '') {
     query = query.regex('title', new RegExp(req.query.title, 'i'))
   }
-  if (req.query.publishedBefore != null && req.query.publishedBefore != '') {
+  if (req.query.publishedBefore && req.query.publishedBefore != '') {
     query = query.lte('publishDate', req.query.publishedBefore)
   }
-  if (req.query.publishedAfter != null && req.query.publishedAfter != '') {
+  if (req.query.publishedAfter && req.query.publishedAfter != '') {
     query = query.gte('publishDate', req.query.publishedAfter)
   }
-  try{
-    const  book =  await Book.find({})
+  try {
+    const  book =  await query.exec()
   res.render('indexB',{
     book : book ,
     searchOptionss  : req.query 
   })
-}catch{
+} catch{
   res.redirect('/')
 }
 })
