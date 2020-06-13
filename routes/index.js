@@ -8,9 +8,8 @@ router.get('/', async(req, res) => {
 try{
   books = await Book.find({}).sort({createdAt : 'desc'}).limit(10).exec()
 }catch{
-  books=[]//if we get an error initialize it
+  books=[] //if we get an error initialize it
 }
  res.render('dashboard',{bookk : books})
-
 })
 module.exports = router

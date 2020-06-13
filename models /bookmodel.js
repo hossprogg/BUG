@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const path = require('path')
 
-const CoverImageBasePath = 'uploads/bookCovers'
+const CoverImageBasePath = 'uploads/bookCovers'//indicating where to store 
 
 const bookSchema = new mongoose.Schema({
         
@@ -36,11 +36,12 @@ const bookSchema = new mongoose.Schema({
         }
     })
 
-bookSchema.virtual('coverImagePath').get(function() {
+bookSchema.virtual('coverImagePath').get(function() {//indicating the file that we wanna query
 if(this.CoverImageName != null){
 return path.join('/',CoverImageBasePath,this.CoverImageName)
 }
 })
+
 
 // Author is the name of the model(database table )with the authorschema as a schema
 // the same cycle here need to export it and then require it to the routing page in which u need it 
