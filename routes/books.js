@@ -39,6 +39,8 @@ router.get('/', async (req, res) => {
 router.get('/newB', async(req, res) => {
     renderNewPage(res,new Book())
 })
+//
+//
 
 //creat author route
 //AUTHOR ROUTES
