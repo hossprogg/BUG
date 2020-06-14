@@ -1,18 +1,12 @@
 const express = require('express')
 const router = express.Router()
-const path = require('path')
-const multer = require('multer')
-const fs = require('fs')
+/* const path = require('path')
+const multer = require('multer') */
+//const fs = require('fs')
 const Book  = require('../models /bookmodel')
-const uploadpath =  path.join('public', Book.CoverImageBasePath)//why here /pblic and there /
+//const uploadpath =  path.join('public', Book.CoverImageBasePath)//why here /pblic and there /
 const Author = require('../models /authmod')
-const imageMimeTypes  = ['image/jpeg','image/png','image/gif']
-const upload = multer({
-    dest : uploadpath,
-    fileFilter : (req,file,callback) =>{//filters shich files our server can accept
-      callback(null,imageMimeTypes.includes(file.mimetype))// this to fix the images types
-    }
-})
+const imageMimeTypes = ['image/jpeg', 'image/png', 'images/gif']
 
 //AUTHOR ROUTES
 //prepended => authors/
@@ -43,42 +37,51 @@ router.get('/', async (req, res) => {
 //prepended => authors/new
 
 router.get('/newB', async(req, res) => {
-    rendernewpage(res,new Book())
+    renderNewPage(res,new Book())
 })
 
 //creat author route
 //AUTHOR ROUTES
 
-router.post('/',upload.single('cover'), async (req, res) => {//multer gonna add single file as the name 'cover' then we will set it with our filename 
- const filename =  req.file != null ? req.file.filename : null//if we dont upload a file it s gonna be set to null and it will throw an error to demande the filename
+/* router.post('/', async (req, res) => {//multer gonna add single file as the name 'cover' then we will set it with our filename 
   const book = new Book({
     title : req.body.title,
+
     author : req.body.author,
     publishDate : new Date(req.body.publishDate),//new date even it s a date cause it make it appropriate ot store into the data abse
     pageCount : req.body.pageCount,
-    CoverImageName : filename,
-    description : req.body.description 
-  })  
+    description : req.body.description
+  })
+  saveCover(book,req.body.cover)//cause our filename input is 'cover'
+
   try{
     const newBook = await book.save() 
-     res.redirect(`books`)
+    res.redirect(`books`)
   }catch{
-    if (book.CoverImageName){
-      removeBookCover(book.CoverImageName)
-    }//even it s an error it added that book cover  our folder which we dont want it 
-  // and the conditional statement is because if it s null we dont have anything to deletete
-  /* pay attention to such things in the web  */
     rendernewpage(res,book,true)
+  }
+}) */
+
+router.post('/', async (req, res) => {
+  const book = new Book({
+    title: req.body.title,
+    author: req.body.author,
+    publishDate: new Date(req.body.publishDate),
+    pageCount: req.body.pageCount,
+    description: req.body.description
+  })
+  saveCover(book, req.body.cover)
+
+  try {
+    const newBook = await book.save()
+    // res.redirect(`books/${newBook.id}`)
+    res.redirect(`books`)
+  } catch {
+    renderNewPage(res, book, true)
   }
 })
 
-function removeBookCover(filename){
-  fs.unlink(path.join(uploadpath, filename),err=>{
-    if (err) console.error(err)//in console cause we don t wanna send this msg type tp the user 
-  })
-}
-
-async function rendernewpage(res,book,hasError = false){//const book = new Book() dont know why he have deleted it 
+async function renderNewPage(res,book,hasError = false){//const book = new Book() dont know why he have deleted it 
 try {
 const authors = await Author.find({})
 const params = {
@@ -90,6 +93,15 @@ const params = {
 } catch{
     res.redirect('/books')
   }//isn t set already app.use(/books) so we just need to put /book
+}
+
+function saveCover(book, coverEncoded) {
+  if (coverEncoded == null) return
+  const cover = JSON.parse(coverEncoded)
+  if (cover != null && imageMimeTypes.includes(cover.type)) {
+    book.coverImage = new Buffer.from(cover.data, 'base64')
+    book.coverImageType = cover.type
+  }
 }
 
 module.exports = router
