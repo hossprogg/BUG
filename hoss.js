@@ -18,6 +18,8 @@ const indexRouter = require('./routes/index')
 const authoRouter = require('./routes/authors')
 const bookrouter  = require('./routes/books')
 const bodyparser = require('body-parser')
+const methodOverride = require('method-override')
+
 const app = express()
 
 //view : our server rendred views 
@@ -34,6 +36,7 @@ if (process.env.NODE_ENV !== 'production') {
 app.use(expressLayouts)
 app.use(express.static('public'))//where our pubic( stylesheet , images ..) file gonna be 
 app.use(bodyparser.urlencoded({limit : '10mb' , extended : false}))
+app.use(methodOverride('_method'))
 
 const mongoose = require('mongoose')
 const db = require('./config/key').MongoURI;
@@ -57,5 +60,5 @@ app.use('/', indexRouter)
 app.use('/authors', authoRouter) 
 app.use('/books' , bookrouter)
 
-app.listen(process.env.PORT  || 3010)
+app.listen(process.env.PORT  || 3001)
 // process.env.PORT is that the server gonna tell us for each port gonna listen 

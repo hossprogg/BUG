@@ -1,7 +1,6 @@
 const express = require('express')
 const router = express.Router()
 const Author = require('../models /authmod')
-
 //AUTHOR ROUTES
 //prepended => authors/
 router.get('/', async (req, res) => {
@@ -49,8 +48,57 @@ router.post('/',async (req, res) => {
       errorMessage : 'error creating author'//displays it when it s set(add condition locals.errormessages in the ejs file) else it gonna be indefined 
     })
    }
-    
+  
   })
 
+  router.get('/:id',(req,res)=>{
+    res.send('show author'+ req.params.id)//set routes with msgs befor 
+  })
+
+  router.get('/:id/edit',async (req,res)=>{
+    try{
+      const author = await Author.findById(req.params.id)
+
+      res.render('edit', {author : author})
+    }catch{
+      res.redirect('/authors')
+    }
+  })
+
+  router.put('/:id',async (req,res)=>{
+    let author
+    try{
+    author = await Author.findById(req.params.id)
+    author.name = req.body.name
+    await author.save()
+    res.redirect(`/authors/${author.id}`)//edit next take him to that page of the edited author
+    }
+    catch{
+      if(author == null){//handling the first error 
+        res.redirect('/')
+      }else{
+        res.render('authors/edit',{
+          author : author,
+          errorMessage : 'error editing the author'
+        })
+      }
+    }
+  })
+
+  router.delete('/:id',async (req,res)=>{
+    let author
+    try{
+    author = await Author.findById(req.params.id)
+    await author.remove()
+    res.redirect('/authors')//edit next take him to that page of the edited author
+    }
+    catch{
+      if(author == null){//handling the first error 
+        res.redirect('/')
+      }else{
+        res.redirect(`/authors/${author.id}`)
+      }
+    }
+  })
 
 module.exports = router

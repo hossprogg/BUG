@@ -99,11 +99,10 @@ const params = {
 
 function saveCover(book, coverEncoded) {
   if (coverEncoded == null) return
-  const cover = JSON.parse(coverEncoded)
+  const cover = JSON.parse(coverEncoded)//remember that long json object returned 
   if (cover != null && imageMimeTypes.includes(cover.type)) {
-    book.coverImage = new Buffer.from(cover.data, 'base64')
-    book.coverImageType = cover.type
+    book.CoverImage = new Buffer.from(cover.data, 'base64')
+    book.CoverImageType = cover.type
   }
 }
-
 module.exports = router
