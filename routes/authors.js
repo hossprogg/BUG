@@ -1,6 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const Author = require('../models /authmod')
+const Book = require('../models /bookmodel')
 //AUTHOR ROUTES
 //prepended => authors/
 router.get('/', async (req, res) => {
@@ -22,7 +23,7 @@ router.get('/', async (req, res) => {
 
 //AUTHOR ROUTES
 //prepended => authors/new
-router.get('/new', (req, res) => {
+router.get('/new', (req, res) => {//this should allways eb defined befor the one fo if 
     res.render('new',{ author : new Author()})// this doesn t creat anything actually but it create a model that we can use to delete update ....) and it can be sent to our ejs file 
   })
 
@@ -51,8 +52,18 @@ router.post('/',async (req, res) => {
   
   })
 
-  router.get('/:id',(req,res)=>{
-    res.send('show author'+ req.params.id)//set routes with msgs befor 
+  router.get('/:id',async(req,res)=>{
+    try {
+      const author  = await Author.findById(req.params.id)
+      const book = await Book.find({author : author.id}).limit(6).exec()
+      res.render('show',{
+        author : author,
+        booksByAuthor : book
+      })
+    }catch(err){
+      console.log(err)
+      res.redirect('/')
+    }
   })
 
   router.get('/:id/edit',async (req,res)=>{
