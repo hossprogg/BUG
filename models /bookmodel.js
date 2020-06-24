@@ -45,7 +45,6 @@ bookSchema.virtual('coverImagePath').get(function() {//indicating the file that 
     }
 })
 
-
 // Author is the name of the model(database table )with the authorschema as a schema
 // the same cycle here need to export it and then require it to the routing page in which u need it 
 module.exports = mongoose.model('Book',bookSchema)

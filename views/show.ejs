@@ -3,6 +3,8 @@
 <%-include('./partials/deleteform.ejs', { url : `/author/${author.id}` })%>
 <% if(booksByAuthor.length >0 ) {   %>
     <% booksByAuthor.forEach(book =>{ %>
+    <a href="/books/<% = book.id %> ">
     <img src="<%book.coverImage%>" alt="coverImage" height="150" width="100">
+    </a>
     <% }) %> 
 <% }%>

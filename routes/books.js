@@ -73,29 +73,123 @@ router.post('/', async (req, res) => {
     description: req.body.description
   })
   saveCover(book, req.body.cover)
-
   try {
     const newBook = await book.save()
-    // res.redirect(`books/${newBook.id}`)
-    res.redirect(`books`)
-  } catch {
+    res.redirect(`books/${newBook.id}`)
+  }catch{
     renderNewPage(res, book, true)
   }
 })
 
-async function renderNewPage(res,book,hasError = false){//const book = new Book() dont know why he have deleted it 
-try {
-const authors = await Author.find({})
-const params = {
-  authors : authors,
-  book : book
-}
-  if (hasError) params.errorMessage = 'Error Creating Book'
-    res.render('newB',params)
-} catch{
+/* router.get('/:id',async(req,res)=>{
+  try{
+    const book = await Book.findById(req.params.id)
+                           .populate('author')
+                           .exec()
+    res.render('showB',{book : book})
+  }catch{
+    res.redirect('/')
+  }
+})
+ */
+
+router.get('/:id', async (req, res) => {
+  try {
+    const book = await Book.findById(req.params.id)
+                           .populate('author')
+                           .exec()
+    res.render('showB', { book: book })
+  }catch {
+    res.redirect('/')
+  }
+})
+
+//Edit author
+
+router.put('/:id', async (req, res) => {
+  let book 
+  try {
+    const book = await Book.findById(req.params.id)
+    book.title = req.body.title
+    book.author = req.body.author
+    book.publishDate = new Date(req.body.publishDate)
+    book.pageCount = req.body.pageCount
+    book.description = req.body.description
+    if(req.body.cover && req.body.cover != ''){
+      saveCover(book,req.body.cover)
+    }
+    await book.save()
+    res.redirect(`/books/${book.id}`)
+  }
+  catch(err){
+    if (book){
+      Console.log(err)
+      rendereditPage(res, book, true)
+    }else{
+      res.redirect('/')
+    }
+  }
+})
+
+router.delete('/:id',async (req,res)=>{
+  let book 
+  try{
+    book = await Book.findById(req.params.id)
+    await book.remove()//removing next redirecting to the home pages to see changes
     res.redirect('/books')
-  }//isn t set already app.use(/books) so we just need to put /book
+  }catch{
+    if(book){
+      res.render('showB',{
+        book : book,
+        errorMessage : 'couldn t remove this book'
+      })
+    }else{
+      res.redirect('/')//to the home page
+    }
+  } 
+})
+
+async function renderNewPage(res,book,hasError = false){
+  renderformPage(res ,book ,'newB' ,hasError)
 }
+
+async function rendereditPage(res,book,hasError = false){
+  renderformPage(res ,book ,'editB', hasError)
+}
+
+async function renderformPage(res,book,form,hasError = false){ //const book = new Book() dont know why he have deleted it 
+  try {
+  const authors = await Author.find({})
+  const params = {
+    authors : authors,
+    book : book
+  }
+     if (hasError) 
+      if(form == 'edit'){
+        params.errorMessage = 'Error Creating Book'
+        res.render('newB',params) 
+      }
+      else {
+        params.errorMessage = 'Error Updating Book'
+        res.render('editB',params) 
+      }
+  
+  res.render(`${form}`,params)
+  } catch{
+    res.redirect('/books')
+    }
+  //in redirectt we have to put a full url so we preceed it with that '/'
+  }
+
+router.get('/:id/edit',async(req,res)=>{
+  try{
+    const book = await Book.findById(req.params.id)
+    rendereditPage(res,book)
+  }catch(err){
+    console.log(err)
+    res.redirect('/')
+  }
+})
 
 function saveCover(book, coverEncoded) {
   if (coverEncoded == null) return

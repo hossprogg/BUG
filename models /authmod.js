@@ -2,13 +2,11 @@ const mongoose = require('mongoose')
 const Book = require('./bookmodel')
 
 const authorSchema = new mongoose.Schema({
-    name : {
+    name: {
         type : String,
         required : true 
     }
 })
-
-
 authorSchema.pre('remove',function(next){//when u use this. u can t use arrow function
     Book.find({author : this.id},(err,books)=>{
         if(err){

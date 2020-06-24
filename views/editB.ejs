@@ -1,0 +1,6 @@
+<h2> Edit BOOK</h2>
+<form action="/books/<%= book.id %>?_method=PUT" method="POST" ><!--it s not multi-form anymore cause its only a json string now  -->
+<%- include('_form_fieldsB') %>
+<a href="/books">cancel</a>
+<button type="submit">Update</button><!--these gonna fire the submit -->
+</form>
